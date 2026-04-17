@@ -66,10 +66,6 @@ func run(ctx context.Context, cancel context.CancelFunc, httpPort int, dataDir s
 	return 0
 }
 
-func smt() error {
-	return fmt.Errorf("Err")
-}
-
 type closeFunc func() error
 
 func initializeLogger(logFile string) (*log.Logger, closeFunc, error) {
