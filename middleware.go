@@ -12,7 +12,7 @@ func requestLogger(logger *slog.Logger) func(http.Handler) http.Handler {
 			logger.Info("Served request",
 				slog.String("method", r.Method),
 				slog.String("path", r.URL.Path),
-				slog.String("ip", r.RemoteAddr),
+				slog.String("client_ip", r.RemoteAddr),
 			)
 		})
 	}
