@@ -12,6 +12,7 @@ import (
 	"strings"
 	"sync"
 
+	"boot.dev/linko/internal/linkoerr"
 	"boot.dev/linko/internal/store"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -93,7 +94,7 @@ func (s *server) handlerRedirect(w http.ResponseWriter, r *http.Request) {
 func (s *server) handlerListURLs(w http.ResponseWriter, r *http.Request) {
 	codes, err := s.store.List(r.Context())
 	if err != nil {
-		s.logger.Error("failed to list URLs", slog.String("URLs", err.Error()))
+		s.logger.Error("failed to list URLs", slog.GroupAttrs("error", linkoerr.Attrs(err)...))
 		http.Error(w, "failed to list URLs", http.StatusInternalServerError)
 		return
 	}

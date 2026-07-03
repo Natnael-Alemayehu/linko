@@ -60,7 +60,7 @@ type attrError interface {
 func Attrs(err error) []slog.Attr {
 	var attrs []slog.Attr
 	for err != nil {
-		if ae, ok := err.(errWithAttrs); ok {
+		if ae, ok := err.(attrError); ok {
 			attrs = append(attrs, ae.Attrs()...)
 		}
 		err = errors.Unwrap(err)
