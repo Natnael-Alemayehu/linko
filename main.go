@@ -123,26 +123,29 @@ type stackTracer interface {
 }
 
 func replaceAttr(groups []string, a slog.Attr) slog.Attr {
-	if a.Key != "error" {
-		return a
+	if a.Key == "error" {
+		err, ok := a.Value.Any().(error)
+		if !ok {
+			return a
+		}
+
+		attrs := []slog.Attr{
+			{
+				Key:   "message",
+				Value: slog.StringValue(err.Error()),
+			},
+		}
+
+		attrs = append(attrs, linkoerr.Attrs(err)...)
+
+		if stackErr, ok := errors.AsType[stackTracer](err); ok {
+			attrs = append(attrs, slog.Attr{
+				Key:   "stack_trace",
+				Value: slog.StringValue(fmt.Sprintf("%+v", stackErr.StackTrace())),
+			})
+		}
+		return slog.GroupAttrs("error", attrs...)
 	}
 
-	err, ok := a.Value.Any().(error)
-	if !(ok) {
-		return a
-	}
-
-	attrs := []slog.Attr{
-		{Key: "message", Value: slog.StringValue(err.Error())},
-	}
-	attrs = append(attrs, linkoerr.Attrs(err)...)
-
-	if stackErr, ok := errors.AsType[stackTracer](err); ok {
-		attrs = append(attrs, slog.Attr{
-			Key:   "stack_trace",
-			Value: slog.StringValue(fmt.Sprintf("%+v", stackErr.StackTrace())),
-		})
-	}
-
-	return slog.GroupAttrs("error", attrs...)
+	return a
 }
