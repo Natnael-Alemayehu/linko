@@ -32,15 +32,10 @@ func Test_requestLogger(t *testing.T) {
 	const expectedLogString = `time=2023-10-01T12:34:57.000Z level=INFO msg="Served request" method=GET path=/api/stats client_ip=192.0.2.1:1234` + "\n"
 	const expectedStatusCode = http.StatusOK
 
-	// replace the .Skip() call with two checks to verify the log string and status code here
-	// If either doesn't match, use t.Errorf to report the failure with a helpful message.
-	// t.Skip()
-
-	if logBuffer.String() != expectedLogString {
-		t.Errorf("Log buffer difference. GOT: %v , EXPECTED: %v", logBuffer.String(), expectedLogString)
-	}
-
 	if rr.Code != expectedStatusCode {
-		t.Errorf("Status Code, GOT: %v , EXPECTED: %v", rr.Result().StatusCode, expectedStatusCode)
+		t.Errorf("Expected status code %d, got %d", expectedStatusCode, rr.Code)
+	}
+	if logBuffer.String() != expectedLogString {
+		t.Errorf("Expected log output:\n%s\nGot:\n%s", expectedLogString, logBuffer.String())
 	}
 }
